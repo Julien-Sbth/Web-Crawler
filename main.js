@@ -1,3 +1,4 @@
+//@ts-check
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -12,8 +13,6 @@ const server = http.createServer((req, res) => {
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             res.statusCode = 404;
-            res.setHeader('Content-Type', 'text/plain');
-            res.end('404 Not Found');
         } else {
             fs.readFile(filePath, 'utf8', (err, data) => {
                 if (err) {
@@ -44,7 +43,7 @@ server.listen(8080, 'localhost', () => {
 
 (async () => {
     try {
-        const browser = await puppeteer.launch({ headless: false, defaultViewport: null });
+        const browser = await puppeteer.launch({headless: false, defaultViewport: null, devtools: false});
         const page = await browser.newPage();
 
         page.on('error', console.error);
@@ -56,7 +55,7 @@ server.listen(8080, 'localhost', () => {
 
         const sendMovement = async (title) => {
             try {
-                await axios.post('http://localhost:8080/movements', { title });
+                await axios.post('http://localhost:8080/movements', {title});
             } catch (err) {
                 console.error(err);
             }
@@ -74,21 +73,31 @@ server.listen(8080, 'localhost', () => {
 
         await page.waitForSelector('#password_input');
         await page.type('#password_input', 'votre_mot_de_passe');
-
-        await Promise.all([
-            page.waitForNavigation(),
-            page.click('#submit_button')
-        ]);
-
-        page.on('click', 'a.browse-card-static__link--VtufN', () => {
-            page.evaluate(() => {
-                const titleElement = document.querySelector('a.browse-card-static__link--VtufN');
-                const title = titleElement.textContent.trim();
-                console.log('Titre cliqué:', title);
-                lastClickedTitle = title;
-            });
-            sendMovement(lastClickedTitle);
+        await page.waitForSelector('#submit_button');
+        await page.evaluate(() => {
+            const btn = document.querySelector('#submit_button');
+            btn.click();
         });
+
+        console.log("exists");
+
+        await page.waitForTimeout(1000);
+        await page.waitForSelector('a[class^="browse-card-static__link"]');
+
+        const targetElements = await page.$$('a[class^="browse-card-static__link"]');
+
+        const titles = [];
+
+        for (const element of targetElements) {
+            const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
+            titles.push(title);
+            lastClickedTitle = title;
+        console.log('Tous les titres:', titles);
+
+// Envoyer les titres au serveur local
+        await sendMovement(titles.join(', '));
+        }
+
 
         console.log('Connecté!');
 

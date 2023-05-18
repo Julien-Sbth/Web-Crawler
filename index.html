@@ -1,10 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Recevoir les données</title>
 </head>
 <body>
-$END$
+<h1>Dernier titre cliqué :</h1>
+<p id="lastClickedTitle"></p>
+
+<script>
+    async function fetchLastClickedTitle() {
+        try {
+            const response = await fetch('/movements');
+            const data = await response.json();
+            document.getElementById('lastClickedTitle').textContent = data.title;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Mettre à jour le titre cliqué toutes les 2 secondes
+    setInterval(fetchLastClickedTitle, 2000);
+
+    // Appeler fetchLastClickedTitle au chargement de la page
+    fetchLastClickedTitle();
+</script>
 </body>
 </html>
