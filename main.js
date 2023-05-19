@@ -112,3 +112,35 @@ server.listen(8080, 'localhost', () => {
         console.error(err);
     }
 })();
+
+function getAnimeTitles(callback) {
+    const url = 'https://www.crunchyroll.com/videos/anime';
+
+    request(url, (error, response, body) => {
+        if (error) {
+            callback(error, null);
+            return;
+        }
+
+        const $ = cheerio.load(body);
+        const titles = [];
+
+        $('h1.series-title').each((index, element) => {
+            titles.push($(element).text().trim());
+        });
+
+        callback(null, titles);
+    });
+}
+
+// Appel de la fonction pour récupérer les titres des animés
+getAnimeTitles((error, titles) => {
+    if (error) {
+        console.error('Une erreur s\'est produite :', error);
+        return;
+    }
+    console.log('Titres des animés sur Crunchyroll :');
+    titles.forEach((title, index) => {
+        console.log(`${index + 1}. ${title}`);
+    });
+});
