@@ -16,10 +16,8 @@
             const titles = data.titles;
             const titlesList = document.getElementById('titlesList');
 
-            // Effacer la liste précédente
             titlesList.innerHTML = '';
 
-            // Ajouter chaque titre à la liste
             titles.forEach((title) => {
                 const listItem = document.createElement('li');
                 listItem.textContent = title;
@@ -30,10 +28,8 @@
         }
     }
 
-    // Mettre à jour la liste des titres toutes les 2 secondes
     setInterval(fetchAllTitles, 2000);
 
-    // Appeler fetchAllTitles au chargement de la page
     fetchAllTitles();
 </script>
 </body>
