@@ -2,28 +2,39 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Recevoir les données</title>
+    <title>Récupérer les titres</title>
 </head>
 <body>
-<h1>Dernier titre cliqué :</h1>
-<p id="lastClickedTitle"></p>
+<h1>Tous les titres :</h1>
+<ul id="titlesList"></ul>
 
 <script>
-    async function fetchLastClickedTitle() {
+    async function fetchAllTitles() {
         try {
             const response = await fetch('/movements');
             const data = await response.json();
-            document.getElementById('lastClickedTitle').textContent = data.title;
+            const titles = data.titles;
+            const titlesList = document.getElementById('titlesList');
+
+            // Effacer la liste précédente
+            titlesList.innerHTML = '';
+
+            // Ajouter chaque titre à la liste
+            titles.forEach((title) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = title;
+                titlesList.appendChild(listItem);
+            });
         } catch (error) {
             console.error(error);
         }
     }
 
-    // Mettre à jour le titre cliqué toutes les 2 secondes
-    setInterval(fetchLastClickedTitle, 2000);
+    // Mettre à jour la liste des titres toutes les 2 secondes
+    setInterval(fetchAllTitles, 2000);
 
-    // Appeler fetchLastClickedTitle au chargement de la page
-    fetchLastClickedTitle();
+    // Appeler fetchAllTitles au chargement de la page
+    fetchAllTitles();
 </script>
 </body>
 </html>

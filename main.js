@@ -5,7 +5,7 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const axios = require('axios');
 
-let lastClickedTitle = '';
+let titles = [];
 
 const server = http.createServer((req, res) => {
     const filePath = path.join(__dirname, 'index.html', req.url);
@@ -33,7 +33,7 @@ server.on('request', (req, res) => {
     if (req.url === '/movements' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ title: lastClickedTitle }));
+        res.end(JSON.stringify({ titles: titles }));
     }
 });
 
@@ -53,9 +53,9 @@ server.listen(8080, 'localhost', () => {
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
 
-        const sendMovement = async (title) => {
+        const sendMovement = async (titles) => {
             try {
-                await axios.post('http://localhost:8080/movements', {title});
+                await axios.post('http://localhost:8080/movements', { titles });
             } catch (err) {
                 console.error(err);
             }
@@ -86,18 +86,15 @@ server.listen(8080, 'localhost', () => {
 
         const targetElements = await page.$$('a[class^="browse-card-static__link"]');
 
-        const titles = [];
-
         for (const element of targetElements) {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
             titles.push(title);
-            lastClickedTitle = title;
-        console.log('Tous les titres:', titles);
-
-// Envoyer les titres au serveur local
-        await sendMovement(titles.join(', '));
         }
 
+        console.log('Tous les titres:', titles);
+
+        // Envoyer les titres au serveur local
+        await sendMovement(titles);
 
         console.log('Connecté!');
 
