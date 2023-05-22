@@ -93,7 +93,7 @@ server.listen(8080, 'localhost', () => {
 
         console.log('Tous les titres:', titles);
 
-        // Envoyer les titres au serveur local
+        // Les titres au serveur local
         await sendMovement(titles);
 
         console.log('Connecté!');
