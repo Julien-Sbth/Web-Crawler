@@ -6,10 +6,9 @@ const puppeteer = require('puppeteer');
 const axios = require('axios');
 
 let titles = [];
-
+const targetPictureLinks = [];
 const server = http.createServer((req, res) => {
     const filePath = path.join(__dirname, 'index.html', req.url);
-
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             res.statusCode = 404;
@@ -28,19 +27,16 @@ const server = http.createServer((req, res) => {
         }
     });
 });
-
 server.on('request', (req, res) => {
     if (req.url === '/movements' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ titles: titles }));
+        res.end(JSON.stringify({ titles: titles, images: targetPictureLinks}));
     }
 });
-
 server.listen(8080, 'localhost', () => {
     console.log('Le serveur est en cours d\'exécution sur http://localhost:8080/');
 });
-
 (async () => {
     try {
         const browser = await puppeteer.launch({headless: false, defaultViewport: null, devtools: false});
@@ -50,12 +46,14 @@ server.listen(8080, 'localhost', () => {
         page.on('pageerror', console.error);
 
         await page.goto('https://www.crunchyroll.com/fr');
+
+        //await solveCaptcha(page);
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
 
-        const sendMovement = async (titles) => {
+        const sendMovement = async (titles, targetPictureLinks) => {
             try {
-                await axios.post('http://localhost:8080/movements', { titles });
+                await axios.post('http://localhost:8080/movements', { titles, targetPictureLinks });
             } catch (err) {
                 console.error(err);
             }
@@ -78,9 +76,7 @@ server.listen(8080, 'localhost', () => {
             const btn = document.querySelector('#submit_button');
             btn.click();
         });
-
         console.log("exists");
-
         await page.waitForTimeout(1000);
         await page.waitForSelector('a[class^="browse-card-static__link"]');
 
@@ -90,13 +86,21 @@ server.listen(8080, 'localhost', () => {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
             titles.push(title);
         }
-
         console.log('Tous les titres:', titles);
 
-        // Envoyer les titres au serveur local
-        await sendMovement(titles);
+        await page.waitForTimeout(1000);
+        await page.waitForSelector('a[class^="browse-card-static__poster-wrapper"]');
 
-        console.log('Connecté!');
+        const targetPictureElements = await page.$$('a[class^="browse-card-static__poster-wrapper"]');
+        for (const element of targetPictureElements) {
+            const imageElement = await element.$('.content-image__image--7tGlg');
+            const imageSrc = await imageElement?.evaluate(elem => elem.getAttribute('src'));
+            targetPictureLinks.push(imageSrc);
+        }
+
+        console.log('Toutes les images', targetPictureLinks);
+
+        await sendMovement(targetPictureLinks, titles);
 
         await page.waitForTimeout(50000000);
 

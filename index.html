@@ -1,39 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Récupérer les titres</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Titre récupérer</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
-<h1>Tous les titres :</h1>
-<ul id="titlesList"></ul>
-
+<h1>Tous les titres et les images :</h1>
+<table id="titlesTable">
+    <thead>
+    <tr>
+        <th>Titre</th>
+        <th>Image</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 <script>
-    async function fetchAllTitles() {
+    async function fetchAllTitlesAndImages() {
         try {
             const response = await fetch('/movements');
             const data = await response.json();
             const titles = data.titles;
-            const titlesList = document.getElementById('titlesList');
-
-            titlesList.innerHTML = '';
-
-            titles.forEach((title) => {
-                const listItem = document.createElement('li');
-                listItem.textContent = title;
-                titlesList.appendChild(listItem);
-            });
+            const images = data.images;
+            const titlesTable = document.getElementById('titlesTable').getElementsByTagName('tbody')[0];
+            titlesTable.innerHTML = '';
+            for (let i = 0; i < titles.length; i++) {
+                const title = titles[i];
+                const imageSrc = images[i];
+                const row = titlesTable.insertRow();
+                const titleCell = row.insertCell();
+                titleCell.textContent = title;
+                const imageCell = row.insertCell();
+                const imageElement = document.createElement('img');
+                imageElement.src = imageSrc;
+                imageCell.appendChild(imageElement);
+            }
         } catch (error) {
             console.error(error);
         }
     }
-
-    setInterval(fetchAllTitles, 2000);
-
-    fetchAllTitles();
+    fetchAllTitlesAndImages();
 </script>
 </body>
 </html>
-
-
-
