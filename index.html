@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Titre récupérer</title>
+    <title>Titres et paragraphes récupérés</title>
     <style>
         table {
             width: 100%;
@@ -22,41 +22,40 @@
     </style>
 </head>
 <body>
-<h1>Tous les titres et les images :</h1>
-<table id="titlesTable">
+<h1>Tous les titres, images et paragraphes :</h1>
+<table id="dataTable">
     <thead>
     <tr>
         <th>Titre</th>
         <th>Image</th>
+        <th>Paragraphe</th>
     </tr>
     </thead>
     <tbody></tbody>
 </table>
 <script>
-    async function fetchAllTitlesAndImages() {
-        try {
-            const response = await fetch('/movements');
-            const data = await response.json();
-            const titles = data.titles;
-            const images = data.images;
-            const titlesTable = document.getElementById('titlesTable').getElementsByTagName('tbody')[0];
-            titlesTable.innerHTML = '';
-            for (let i = 0; i < titles.length; i++) {
-                const title = titles[i];
-                const imageSrc = images[i];
-                const row = titlesTable.insertRow();
-                const titleCell = row.insertCell();
+    fetch('http://localhost:8080/movements')
+        .then(response => response.json())
+        .then(data => {
+            const dataTable = document.getElementById('dataTable');
+
+            data.titles.forEach((title, index) => {
+                const row = dataTable.insertRow();
+                const titleCell = row.insertCell(0);
                 titleCell.textContent = title;
-                const imageCell = row.insertCell();
-                const imageElement = document.createElement('img');
-                imageElement.src = imageSrc;
-                imageCell.appendChild(imageElement);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-    fetchAllTitlesAndImages();
+
+                const imageCell = row.insertCell(1);
+                const img = document.createElement('img');
+                img.src = data.images[index];
+                imageCell.appendChild(img);
+
+                const paragraphCell = row.insertCell(2);
+                if (index === 0) {
+                    paragraphCell.textContent = data.paragraph;
+                }
+            });
+        })
+        .catch(error => console.error(error));
 </script>
 </body>
 </html>
