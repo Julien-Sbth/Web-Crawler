@@ -87,7 +87,7 @@ server.listen(8080, 'localhost', () => {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
             titles.push(title);
         }
-        console.log('Tous les titres:', titles);
+        console.log('les titres:', titles);
 
         await page.waitForTimeout(1000);
         await page.waitForSelector('a[class^="browse-card-static__poster-wrapper"]');
