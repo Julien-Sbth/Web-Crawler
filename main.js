@@ -7,7 +7,7 @@ const axios = require('axios');
 
 let titles = [];
 const targetPictureLinks = [];
-let formattedParagraph = ''; // Ajout de la définition de la variable formattedParagraph
+let paragraphs = []; // Ajout de la variable paragraphs pour stocker les paragraphes d'histoire
 const server = http.createServer((req, res) => {
     const filePath = path.join(__dirname, 'index.html', req.url);
     fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -32,7 +32,7 @@ server.on('request', (req, res) => {
     if (req.url === '/movements' && req.method === 'GET') {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ titles: titles, images: targetPictureLinks, paragraph: formattedParagraph }));
+        res.end(JSON.stringify({ titles: titles, images: targetPictureLinks, paragraphs: paragraphs }));
     }
 });
 server.listen(8080, 'localhost', () => {
@@ -52,9 +52,9 @@ server.listen(8080, 'localhost', () => {
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
 
-        const sendMovement = async (titles, targetPictureLinks, formattedParagraph) => {
+        const sendMovement = async (titles, targetPictureLinks, paragraphs) => {
             try {
-                await axios.post('http://localhost:8080/movements', { titles, targetPictureLinks, paragraphs: formattedParagraph });
+                await axios.post('http://localhost:8080/movements', { titles, targetPictureLinks, paragraphs });
             } catch (err) {
                 console.error(err);
             }
@@ -101,21 +101,25 @@ server.listen(8080, 'localhost', () => {
 
         console.log('Toutes les images', targetPictureLinks);
 
-        await page.waitForSelector('.browse-card-static__link--VtufN');
-        await page.click('.browse-card-static__link--VtufN');
+        const mangaLinks = await page.$$eval('a[class^="browse-card-static__link"]', links =>
+            links.map(link => link.href)
+        );
 
-        await page.waitForSelector('.text--gq6o-');
-        await page.waitForSelector('p.text--gq6o-.expandable-section__text---00oG');
-        const paragraph = await page.$eval('p.text--gq6o-.expandable-section__text---00oG', element => {
-            const text = element.textContent;
-            return `"${text}"`;
-        });
+        for (const link of mangaLinks) {
+            await page.goto(link);
 
-        formattedParagraph = `[${paragraph}]`;
+            await page.waitForSelector('.expandable-section__text---00oG');
 
-        console.log('Paragraphe récupéré :', formattedParagraph);
+            const paragraph = await page.$eval('.expandable-section__text---00oG', element =>
+                element.textContent.trim()
+            );
 
-        await sendMovement(targetPictureLinks, titles, paragraph);
+            paragraphs.push(paragraph);
+        }
+
+        console.log('Tous les paragraphes d\'histoire des mangas :', paragraphs);
+
+        await sendMovement(targetPictureLinks, titles, paragraphs);
         process.exit(0);
 
         await page.waitForTimeout(50000000);

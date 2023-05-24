@@ -19,6 +19,11 @@
         th {
             background-color: #f2f2f2;
         }
+
+        .no-description {
+            font-style: italic;
+            color: gray;
+        }
     </style>
 </head>
 <body>
@@ -50,8 +55,11 @@
                 imageCell.appendChild(img);
 
                 const paragraphCell = row.insertCell(2);
-                if (index === 0) {
-                    paragraphCell.textContent = data.paragraph;
+                if (data.paragraphs[index]) {
+                    paragraphCell.textContent = data.paragraphs[index];
+                } else {
+                    paragraphCell.classList.add('no-description');
+                    paragraphCell.textContent = 'Aucune description disponible';
                 }
             });
         })
