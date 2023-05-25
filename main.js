@@ -7,7 +7,7 @@ const axios = require('axios');
 
 let titles = [];
 const targetPictureLinks = [];
-let paragraphs = []; // Ajout de la variable paragraphs pour stocker les paragraphes d'histoire
+let paragraphs = [];
 const server = http.createServer((req, res) => {
     const filePath = path.join(__dirname, 'index.html', req.url);
     fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -87,7 +87,7 @@ server.listen(8080, 'localhost', () => {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
             titles.push(title);
         }
-        console.log('les titres:', titles);
+        console.log('Tous les titres:', titles);
 
         await page.waitForTimeout(1000);
         await page.waitForSelector('a[class^="browse-card-static__poster-wrapper"]');
