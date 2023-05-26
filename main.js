@@ -47,7 +47,6 @@ server.listen(8080, 'localhost', () => {
         page.on('pageerror', console.error);
 
         await page.goto('https://www.crunchyroll.com/fr');
-
         //await solveCaptcha(page);
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
