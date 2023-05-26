@@ -5,47 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Titres et paragraphes récupérés</title>
     <style>
-        /* Votre code CSS ici */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: black;
+            background-color: #000000;
         }
+
         h1 {
             text-align: center;
-            color: white;
+            color: #ffffff;
             margin-bottom: 30px;
             animation: fade-in 1s ease-in-out;
         }
+
         table {
-            color: white;
+            color: #f2f2f2;
             width: 100%;
             border-collapse: collapse;
             animation: slide-up 1s ease-in-out;
         }
+
         th, td {
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+
         th {
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
+            background-color: #000000;
         }
+
         .no-description {
             font-style: italic;
             color: gray;
         }
-        .image-cell {
-            width: 100px;
-            text-align: center;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-        }
+
         @keyframes fade-in {
             from {
                 opacity: 0;
@@ -54,6 +49,7 @@
                 opacity: 1;
             }
         }
+
         @keyframes slide-up {
             from {
                 transform: translateY(20px);
@@ -61,6 +57,14 @@
             to {
                 transform: translateY(0);
             }
+        }
+
+        .rotate-image {
+            transition: transform 0.5s;
+        }
+
+        .rotate-image:hover {
+            transform: rotate(360deg);
         }
     </style>
 </head>
@@ -76,46 +80,33 @@
     </thead>
     <tbody></tbody>
 </table>
-
 <script>
-    const dataTable = document.getElementById('dataTable');
-
-    // Fonction pour créer une cellule avec du texte
-    function createTextCell(text) {
-        const cell = document.createElement('td');
-        cell.textContent = text;
-        return cell;
-    }
-
-    // Fonction pour créer une cellule avec une image
-    function createImageCell(src, alt) {
-        const cell = document.createElement('td');
-        cell.classList.add('image-cell');
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = alt;
-        cell.appendChild(img);
-        return cell;
-    }
-
     fetch('http://localhost:8080/movements')
         .then(response => response.json())
         .then(data => {
+            const dataTable = document.getElementById('dataTable');
+
             data.titles.forEach((title, index) => {
                 const row = dataTable.insertRow();
-                row.appendChild(createTextCell(title));
-                row.appendChild(createImageCell(data.images[index], title));
+                const titleCell = row.insertCell(0);
+                titleCell.textContent = title;
 
-                const paragraphCell = document.createElement('td');
+                const imageCell = row.insertCell(1);
+                const img = document.createElement('img');
+                img.src = data.images[index];
+                img.classList.add('rotate-image'); // Ajout de la classe pour l'animation
+                imageCell.appendChild(img);
+
+                const paragraphCell = row.insertCell(2);
                 if (data.paragraphs[index]) {
                     paragraphCell.textContent = data.paragraphs[index];
                 } else {
                     paragraphCell.classList.add('no-description');
                     paragraphCell.textContent = 'Aucune description disponible';
                 }
-                row.appendChild(paragraphCell);
             });
         })
+        .catch(error => console.error(error));
 </script>
 </body>
 </html>
