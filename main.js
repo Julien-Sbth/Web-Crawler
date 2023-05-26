@@ -63,7 +63,6 @@ server.listen(8080, 'localhost', () => {
         await userMenuNavItems[1].click();
 
         await page.waitForTimeout(1000);
-
         await page.waitForSelector('#username_input');
         await page.type('#username_input', 'test2743753@gmail.com');
 
