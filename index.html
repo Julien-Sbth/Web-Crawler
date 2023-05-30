@@ -62,6 +62,17 @@
                 transform: translateY(0);
             }
         }
+        .image-cell-hover {
+            /* Vos styles actuels pour la cellule d'image */
+
+            /* Animation de rotation au survol */
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .image-cell-hover:hover {
+            transform: rotate(360deg); // Rotation de 360 degrés au survol
+        }
+
     </style>
 </head>
 <body>
@@ -90,7 +101,7 @@
     // Fonction pour créer une cellule avec une image
     function createImageCell(src, alt) {
         const cell = document.createElement('td');
-        cell.classList.add('image-cell');
+        cell.classList.add('image-cell', 'image-cell-hover'); // Ajout de la classe "image-cell-hover"
         const img = document.createElement('img');
         img.src = src;
         img.alt = alt;

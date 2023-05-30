@@ -79,9 +79,9 @@ server.listen(8080, 'localhost', () => {
         });
         console.log("exists");
         await page.waitForTimeout(1000);
-        await page.waitForSelector('a[class^="browse-card-static__link"]');
+        await page.waitForSelector('a[class^="browse-card-hover__link--0BAl-"]');
 
-        const targetElements = await page.$$('a[class^="browse-card-static__link"]');
+        const targetElements = await page.$$('a[class^="browse-card-hover__link"]');
 
         for (const element of targetElements) {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
@@ -90,9 +90,9 @@ server.listen(8080, 'localhost', () => {
         console.log('Tous les titres:', titles);
 
         await page.waitForTimeout(1000);
-        await page.waitForSelector('a[class^="browse-card-static__poster-wrapper"]');
+        await page.waitForSelector('a[class^="browse-card-hover__poster-wrapper"]');
 
-        const targetPictureElements = await page.$$('a[class^="browse-card-static__poster-wrapper"]');
+        const targetPictureElements = await page.$$('a[class^="browse-card-hover__poster-wrapper"]');
         for (const element of targetPictureElements) {
             const imageElement = await element.$('.content-image__image--7tGlg');
             const imageSrc = await imageElement?.evaluate(elem => elem.getAttribute('src'));
@@ -101,7 +101,7 @@ server.listen(8080, 'localhost', () => {
 
         console.log('Toutes les images', targetPictureLinks);
 
-        const mangaLinks = await page.$$eval('a[class^="browse-card-static__link"]', links =>
+        const mangaLinks = await page.$$eval('a[class^="browse-card-hover__link--0BAl-"]', links =>
             links.map(link => link.href)
         );
 
