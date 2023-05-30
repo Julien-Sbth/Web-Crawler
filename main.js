@@ -47,6 +47,7 @@ server.listen(8080, 'localhost', () => {
         page.on('pageerror', console.error);
 
         await page.goto('https://www.crunchyroll.com/fr');
+
         //await solveCaptcha(page);
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
@@ -63,6 +64,7 @@ server.listen(8080, 'localhost', () => {
         await userMenuNavItems[1].click();
 
         await page.waitForTimeout(1000);
+
         await page.waitForSelector('#username_input');
         await page.type('#username_input', 'test2743753@gmail.com');
 
@@ -79,7 +81,7 @@ server.listen(8080, 'localhost', () => {
         await page.waitForTimeout(1000);
         await page.waitForSelector('a[class^="browse-card-hover__link--0BAl-"]');
 
-        const targetElements = await page.$$('a[class^="browse-card-hover__link"]');
+        const targetElements = await page.$$('a[class^="browse-card-hover__link--0BAl-"]');
 
         for (const element of targetElements) {
             const title = await page.evaluate((elem) => elem.getAttribute('title'), element);
@@ -88,9 +90,9 @@ server.listen(8080, 'localhost', () => {
         console.log('Tous les titres:', titles);
 
         await page.waitForTimeout(1000);
-        await page.waitForSelector('a[class^="browse-card-hover__poster-wrapper"]');
+        await page.waitForSelector('a[class^="browse-card-hover__poster-wrapper--Yf-IK"]');
 
-        const targetPictureElements = await page.$$('a[class^="browse-card-hover__poster-wrapper"]');
+        const targetPictureElements = await page.$$('a[class^="browse-card-hover__poster-wrapper--Yf-IK"]');
         for (const element of targetPictureElements) {
             const imageElement = await element.$('.content-image__image--7tGlg');
             const imageSrc = await imageElement?.evaluate(elem => elem.getAttribute('src'));
@@ -108,7 +110,7 @@ server.listen(8080, 'localhost', () => {
 
             await page.waitForSelector('.expandable-section__text---00oG');
 
-            const paragraph = await page.$eval('.expandable-section__text---00oGgit ', element =>
+            const paragraph = await page.$eval('.expandable-section__text---00oG', element =>
                 element.textContent.trim()
             );
 

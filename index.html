@@ -58,7 +58,6 @@
                 transform: translateY(0);
             }
         }
-<<<<<<< HEAD
         .image-cell-hover {
             /* Vos styles actuels pour la cellule d'image */
 
@@ -70,8 +69,6 @@
             transform: rotate(360deg); // Rotation de 360 degrés au survol
         }
 
-=======
-
         .rotate-image {
             transition: transform 0.5s;
         }
@@ -79,7 +76,6 @@
         .rotate-image:hover {
             transform: rotate(360deg);
         }
->>>>>>> 78955f41defe0ea4320bf573a34c9fcfe5b817db
     </style>
 </head>
 <body>
@@ -95,7 +91,6 @@
     <tbody></tbody>
 </table>
 <script>
-<<<<<<< HEAD
     const dataTable = document.getElementById('dataTable');
 
     // Fonction pour créer une cellule avec du texte
@@ -115,9 +110,6 @@
         cell.appendChild(img);
         return cell;
     }
-
-=======
->>>>>>> 78955f41defe0ea4320bf573a34c9fcfe5b817db
     fetch('http://localhost:8080/movements')
         .then(response => response.json())
         .then(data => {
