@@ -47,7 +47,6 @@ server.listen(8080, 'localhost', () => {
         page.on('pageerror', console.error);
 
         await page.goto('https://www.crunchyroll.com/fr');
-
         //await solveCaptcha(page);
         await page.waitForSelector('.erc-anonymous-user-menu');
         await page.click('.erc-anonymous-user-menu');
@@ -64,7 +63,6 @@ server.listen(8080, 'localhost', () => {
         await userMenuNavItems[1].click();
 
         await page.waitForTimeout(1000);
-
         await page.waitForSelector('#username_input');
         await page.type('#username_input', 'test2743753@gmail.com');
 
@@ -110,7 +108,7 @@ server.listen(8080, 'localhost', () => {
 
             await page.waitForSelector('.expandable-section__text---00oG');
 
-            const paragraph = await page.$eval('.expandable-section__text---00oG', element =>
+            const paragraph = await page.$eval('.expandable-section__text---00oGgit ', element =>
                 element.textContent.trim()
             );
 
