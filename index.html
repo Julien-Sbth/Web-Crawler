@@ -9,38 +9,42 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #000000;
+            background-color: black;
         }
-
         h1 {
             text-align: center;
-            color: #ffffff;
+            color: white;
             margin-bottom: 30px;
             animation: fade-in 1s ease-in-out;
         }
-
         table {
-            color: #f2f2f2;
+            color: white;
             width: 100%;
             border-collapse: collapse;
             animation: slide-up 1s ease-in-out;
         }
-
         th, td {
             padding: 8px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
         th {
-            background-color: #000000;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-
         .no-description {
             font-style: italic;
             color: gray;
         }
-
+        .image-cell {
+            width: 100px;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
         @keyframes fade-in {
             from {
                 opacity: 0;
@@ -49,7 +53,6 @@
                 opacity: 1;
             }
         }
-
         @keyframes slide-up {
             from {
                 transform: translateY(20px);
@@ -66,16 +69,9 @@
         }
 
         .image-cell-hover:hover {
-            transform: rotate(360deg); // Rotation de 360 degrés au survol
+            transform: rotate(350deg); // Rotation de 360 degrés au survol
         }
 
-        .rotate-image {
-            transition: transform 0.5s;
-        }
-
-        .rotate-image:hover {
-            transform: rotate(360deg);
-        }
     </style>
 </head>
 <body>
@@ -90,6 +86,7 @@
     </thead>
     <tbody></tbody>
 </table>
+
 <script>
     const dataTable = document.getElementById('dataTable');
 
@@ -110,32 +107,25 @@
         cell.appendChild(img);
         return cell;
     }
+
     fetch('http://localhost:8080/movements')
         .then(response => response.json())
         .then(data => {
-            const dataTable = document.getElementById('dataTable');
-
             data.titles.forEach((title, index) => {
                 const row = dataTable.insertRow();
-                const titleCell = row.insertCell(0);
-                titleCell.textContent = title;
+                row.appendChild(createTextCell(title));
+                row.appendChild(createImageCell(data.images[index], title));
 
-                const imageCell = row.insertCell(1);
-                const img = document.createElement('img');
-                img.src = data.images[index];
-                img.classList.add('rotate-image'); // Ajout de la classe pour l'animation
-                imageCell.appendChild(img);
-
-                const paragraphCell = row.insertCell(2);
+                const paragraphCell = document.createElement('td');
                 if (data.paragraphs[index]) {
                     paragraphCell.textContent = data.paragraphs[index];
                 } else {
                     paragraphCell.classList.add('no-description');
                     paragraphCell.textContent = 'Aucune description disponible';
                 }
+                row.appendChild(paragraphCell);
             });
         })
-        .catch(error => console.error(error));
 </script>
 </body>
 </html>
